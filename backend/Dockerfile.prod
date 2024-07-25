@@ -1,0 +1,36 @@
+# Build stage
+FROM node:18 AS builder
+
+WORKDIR /tmp/app
+
+COPY package*.json ./
+COPY prisma ./prisma/
+COPY tsconfig.json ./
+
+# Install app dependencies
+RUN npm install
+COPY . .
+
+RUN npm run build
+
+# Final stage
+FROM node:18
+
+WORKDIR /app
+
+COPY --from=builder /tmp/app/package*.json ./
+COPY --from=builder /tmp/app/node_modules ./node_modules
+COPY --from=builder /tmp/app/dist ./dist
+COPY --from=builder /tmp/app/prisma ./prisma
+COPY --from=builder /tmp/app/tsconfig.json ./
+COPY --from=builder /tmp/app/uploadedFiles ./uploadedFiles
+COPY --from=builder /tmp/app/generatedFiles ./generatedFiles
+
+ENV NODE_ENV=production
+
+EXPOSE 6001
+
+COPY ./scripts/run_app_prod.sh ./scripts/run_app_prod.sh
+RUN chmod +x ./scripts/run_app_prod.sh
+
+CMD ["./scripts/run_app_prod.sh"]

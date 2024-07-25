@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:13.5
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    restart: always
+    depends_on:
+      - postgres
+    ports:
+      - '6001:6001'
+    env_file:
+      - .env
+    volumes:
+      - generated_files:/app/generatedFiles # Docker volume for generatedFiles
+      - uploaded_files:/app/uploadedFiles # Docker volume for uploadedFiles
+
+volumes:
+  postgres_data:
+  generated_files:
+  uploaded_files:

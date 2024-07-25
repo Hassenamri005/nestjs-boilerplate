@@ -1,0 +1,101 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model user_role {
+  id       Int    @id @default(autoincrement())
+  roleName String
+  users    user[]
+}
+
+model company_type {
+  id       Int    @id @default(autoincrement())
+  typeName String
+  users    user[]
+}
+
+model user_pack {
+  id       Int    @id @default(autoincrement())
+  packName String
+  users    user[]
+}
+
+model car_type {
+  id       Int    @id @default(autoincrement())
+  typeName String
+  user     user[]
+}
+
+model user_dispo {
+  id       Int     @id @default(autoincrement())
+  goingTo  String?
+  startDay String?
+  endDay   String?
+  startAt  String?
+  endAt    String?
+  comment  String?
+  user     user?   @relation(fields: [userId], references: [id])
+  userId   Int?    @unique
+}
+
+model user {
+  id                 Int     @id @default(autoincrement())
+  firstName          String? @db.VarChar(20)
+  lastName           String? @db.VarChar(20)
+  phone              String? @db.VarChar(20)
+  email              String  @unique @db.VarChar(100)
+  companyName        String? @db.VarChar(50)
+  city               String? @db.VarChar(20)
+  country            String? @db.VarChar(20)
+  address            String? @db.VarChar(50)
+  websiteUrl         String? @db.VarChar(50)
+  commercialRegister String? @db.VarChar(20)
+  patent             String? @db.VarChar(20)
+  verified           Boolean @default(false)
+  password           String  @db.VarChar(255)
+  resetPasswordToken String? @db.VarChar(255)
+  carNumber          String?
+  carWidth           Float?
+  carHeight          Float?
+  carWeight          Float?
+
+  // company type relation
+  carType       car_type?     @relation(fields: [carTypeId], references: [id])
+  carTypeId     Int?
+  // company type relation
+  companyType   company_type? @relation(fields: [companyTypeId], references: [id])
+  companyTypeId Int?
+  // user pack
+  userPack      user_pack?    @relation(fields: [userPackId], references: [id])
+  userPackId    Int?
+  // role relation
+  role          user_role?    @relation(fields: [roleId], references: [id])
+  roleId        Int?          @default(3)
+
+  // One-to-one
+  disponibility user_dispo?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model article {
+  id          Int      @id @default(autoincrement())
+  title       String?  @unique
+  description String?
+  category    String?
+  body        String
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
