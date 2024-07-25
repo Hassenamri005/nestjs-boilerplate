@@ -3,6 +3,7 @@
 [![Version](https://img.shields.io/badge/Version-1.0.0-yellow)](https://github.com/your-profile/your-repo/releases)
 
 # Nest JS Boilerplate
+![nestjs](https://github.com/user-attachments/assets/901842e8-5adb-4adb-8d22-fffb40a5347b)
 
 NestJS boilerplate integrating Auth, Prisma, Postgres, Mailing, Docker, and Docker Compose.
 
